@@ -1,17 +1,20 @@
-#include <iostream>
 #include <mecab.h>
 
-#define CHECK(eval) if (! eval) { \
-   const char *e = tagger ? tagger->what() : MeCab::getTaggerError(); \
-   std::cerr << "Exception:" << e << std::endl; \
-   delete tagger; \
-   return -1; }
+#include <iostream>
+#define CHECK(eval)                                                    \
+  if (!eval) {                                                         \
+    const char *e = tagger ? tagger->what() : MeCab::getTaggerError(); \
+    std::cerr << "Exception:" << e << std::endl;                       \
+    delete tagger;                                                     \
+    return -1;                                                         \
+  }
 
 // Sample of MeCab::Tagger class.
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
+  system("chcp 65001");
   char input[] = "太郎は次郎が持っている本を花子に渡した。";
-
-  MeCab::Tagger *tagger = MeCab::createTagger("");
+  // Set dict path by -d /path/of/dict
+  MeCab::Tagger *tagger = MeCab::createTagger("-d E:\\mecab\\mecab-ipadic");
   CHECK(tagger);
 
   // Gets tagged result in string format.
@@ -32,7 +35,7 @@ int main (int argc, char **argv) {
   }
 
   // Gets Node object.
-  const MeCab::Node* node = tagger->parseToNode(input);
+  const MeCab::Node *node = tagger->parseToNode(input);
   CHECK(node);
   for (; node; node = node->next) {
     std::cout << node->id << ' ';
@@ -41,33 +44,26 @@ int main (int argc, char **argv) {
     else if (node->stat == MECAB_EOS_NODE)
       std::cout << "EOS";
     else
-      std::cout.write (node->surface, node->length);
+      std::cout.write(node->surface, node->length);
 
-    std::cout << ' ' << node->feature
-	      << ' ' << (int)(node->surface - input)
-	      << ' ' << (int)(node->surface - input + node->length)
-	      << ' ' << node->rcAttr
-	      << ' ' << node->lcAttr
-	      << ' ' << node->posid
-	      << ' ' << (int)node->char_type
-	      << ' ' << (int)node->stat
-	      << ' ' << (int)node->isbest
-	      << ' ' << node->alpha
-	      << ' ' << node->beta
-	      << ' ' << node->prob
-	      << ' ' << node->cost << std::endl;
+    std::cout << ' ' << node->feature << ' ' << (int)(node->surface - input)
+              << ' ' << (int)(node->surface - input + node->length) << ' '
+              << node->rcAttr << ' ' << node->lcAttr << ' ' << node->posid
+              << ' ' << (int)node->char_type << ' ' << (int)node->stat << ' '
+              << (int)node->isbest << ' ' << node->alpha << ' ' << node->beta
+              << ' ' << node->prob << ' ' << node->cost << std::endl;
   }
 
   // Dictionary info.
   const MeCab::DictionaryInfo *d = tagger->dictionary_info();
   for (; d; d = d->next) {
-    std::cout << "filename: " <<  d->filename << std::endl;
-    std::cout << "charset: " <<  d->charset << std::endl;
-    std::cout << "size: " <<  d->size << std::endl;
-    std::cout << "type: " <<  d->type << std::endl;
-    std::cout << "lsize: " <<  d->lsize << std::endl;
-    std::cout << "rsize: " <<  d->rsize << std::endl;
-    std::cout << "version: " <<  d->version << std::endl;
+    std::cout << "filename: " << d->filename << std::endl;
+    std::cout << "charset: " << d->charset << std::endl;
+    std::cout << "size: " << d->size << std::endl;
+    std::cout << "type: " << d->type << std::endl;
+    std::cout << "lsize: " << d->lsize << std::endl;
+    std::cout << "rsize: " << d->rsize << std::endl;
+    std::cout << "version: " << d->version << std::endl;
   }
 
   delete tagger;
